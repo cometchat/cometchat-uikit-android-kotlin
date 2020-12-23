@@ -539,58 +539,58 @@ public class Utils {
             }
         }
 
-        fun checkSmartReply(lastMessage: BaseMessage?): List<String?>? {
-            if (lastMessage != null && lastMessage.sender.uid != CometChat.getLoggedInUser().uid) {
-                if (lastMessage.metadata != null) {
-                    return Utils.getSmartReplyList(lastMessage)
-                }
-            }
-            return null
-        }
+//        fun checkSmartReply(lastMessage: BaseMessage?): List<String?>? {
+//            if (lastMessage != null && lastMessage.sender.uid != CometChat.getLoggedInUser().uid) {
+//                if (lastMessage.metadata != null) {
+//                    return Utils.getSmartReplyList(lastMessage)
+//                }
+//            }
+//            return null
+//        }
 
-        private fun getSmartReplyList(baseMessage: BaseMessage): List<String>? {
-            val extensionList: HashMap<String, JSONObject> = Utils.extensionCheck(baseMessage)!!
-            if (extensionList != null && extensionList.containsKey("smartReply")) {
-                val replyObject = extensionList["smartReply"]
-                val replyList: MutableList<String> = ArrayList()
-                try {
-                    replyList.add(replyObject!!.getString("reply_positive"))
-                    replyList.add(replyObject.getString("reply_neutral"))
-                    replyList.add(replyObject.getString("reply_negative"))
-                } catch (e: java.lang.Exception) {
-                    Log.e(TAG, "onSuccess: " + e.message)
-                }
-                return replyList
-            }
-            return null
-        }
+//        private fun getSmartReplyList(baseMessage: BaseMessage): List<String>? {
+//            val extensionList: HashMap<String, JSONObject> = Utils.extensionCheck(baseMessage)!!
+//            if (extensionList != null && extensionList.containsKey("smartReply")) {
+//                val replyObject = extensionList["smartReply"]
+//                val replyList: MutableList<String> = ArrayList()
+//                try {
+//                    replyList.add(replyObject!!.getString("reply_positive"))
+//                    replyList.add(replyObject.getString("reply_neutral"))
+//                    replyList.add(replyObject.getString("reply_negative"))
+//                } catch (e: java.lang.Exception) {
+//                    Log.e(TAG, "onSuccess: " + e.message)
+//                }
+//                return replyList
+//            }
+//            return null
+//        }
 
-        fun extensionCheck(baseMessage: BaseMessage): HashMap<String, JSONObject>? {
-            val metadata = baseMessage.metadata
-            val extensionMap = HashMap<String, JSONObject>()
-            try {
-                return if (metadata != null) {
-                    val injectedObject = metadata.getJSONObject("@injected")
-                    if (injectedObject != null && injectedObject.has("extensions")) {
-                        val extensionsObject = injectedObject.getJSONObject("extensions")
-                        if (extensionsObject != null && extensionsObject.has("link-preview")) {
-                            val linkPreviewObject = extensionsObject.getJSONObject("link-preview")
-                            val linkPreview = linkPreviewObject.getJSONArray("links")
-                            if (linkPreview.length() > 0) {
-                                extensionMap["linkPreview"] = linkPreview.getJSONObject(0)
-                            }
-                        }
-                        if (extensionsObject != null && extensionsObject.has("smart-reply")) {
-                            extensionMap["smartReply"] = extensionsObject.getJSONObject("smart-reply")
-                        }
-                    }
-                    extensionMap
-                } else null
-            } catch (e: java.lang.Exception) {
-                Log.e(TAG, "isLinkPreview: " + e.message)
-            }
-            return null
-        }
+//        public static fun extensionCheck(baseMessage: BaseMessage): HashMap<String, JSONObject>? {
+//            val metadata = baseMessage.metadata
+//            val extensionMap = HashMap<String, JSONObject>()
+//            try {
+//                return if (metadata != null) {
+//                    val injectedObject = metadata.getJSONObject("@injected")
+//                    if (injectedObject != null && injectedObject.has("extensions")) {
+//                        val extensionsObject = injectedObject.getJSONObject("extensions")
+//                        if (extensionsObject != null && extensionsObject.has("link-preview")) {
+//                            val linkPreviewObject = extensionsObject.getJSONObject("link-preview")
+//                            val linkPreview = linkPreviewObject.getJSONArray("links")
+//                            if (linkPreview.length() > 0) {
+//                                extensionMap["linkPreview"] = linkPreview.getJSONObject(0)
+//                            }
+//                        }
+//                        if (extensionsObject != null && extensionsObject.has("smart-reply")) {
+//                            extensionMap["smartReply"] = extensionsObject.getJSONObject("smart-reply")
+//                        }
+//                    }
+//                    extensionMap
+//                } else null
+//            } catch (e: java.lang.Exception) {
+//                Log.e(TAG, "isLinkPreview: " + e.message)
+//            }
+//            return null
+//        }
 
         fun startCallIntent(context: Context, user: User, type: String?,
                             isOutgoing: Boolean, sessionId: String) {

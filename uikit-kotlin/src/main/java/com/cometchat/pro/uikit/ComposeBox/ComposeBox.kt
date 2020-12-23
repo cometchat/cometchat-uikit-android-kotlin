@@ -17,6 +17,7 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.inputmethod.InputContentInfoCompat
+import com.cometchat.pro.core.CometChat
 import com.cometchat.pro.uikit.AudioVisualizer.AudioRecordView
 import com.cometchat.pro.uikit.ComposeBox.CometChatEditText.OnEditTextMediaListener
 import com.cometchat.pro.uikit.ComposeBox.ComposeBoxActionFragment.ComposeBoxActionListener
@@ -29,6 +30,7 @@ import java.io.IOException
 import java.util.*
 
 class ComposeBox : RelativeLayout, View.OnClickListener {
+    public var btnLiveReaction: ImageView? = null
     private var audioRecordView: AudioRecordView? = null
     private var mediaRecorder: MediaRecorder? = null
     private var mediaPlayer: MediaPlayer? = null
@@ -67,6 +69,7 @@ class ComposeBox : RelativeLayout, View.OnClickListener {
     var isCameraVisible = true
     var isFileVisible = true
     var isLocationVisible = true
+    var isStickerVisible = true
 
     constructor(context: Context) : super(context) {
         initViewComponent(context, null, -1, -1)
@@ -100,6 +103,7 @@ class ComposeBox : RelativeLayout, View.OnClickListener {
                 }
             }, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN)
         }
+        btnLiveReaction = findViewById(R.id.btn_live_reaction)
         composeBox = findViewById(R.id.message_box)
         flBox = findViewById(R.id.flBox)
         ivMic = findViewById(R.id.ivMic)
@@ -165,6 +169,10 @@ class ComposeBox : RelativeLayout, View.OnClickListener {
 
             override fun onLocationClick() {
                 composeActionListener!!.onLocationActionClicked()
+            }
+
+            override fun onStickerClick() {
+                composeActionListener!!.onStickerActionClicked()
             }
         })
 
@@ -304,6 +312,9 @@ class ComposeBox : RelativeLayout, View.OnClickListener {
             bundle.putBoolean("isFileVisible", isFileVisible)
             bundle.putBoolean("isAudioVisible", isAudioVisible)
             bundle.putBoolean("isLocationVisible", isLocationVisible)
+            if (CometChat.isExtensionEnabled("stickers")){
+                bundle.putBoolean("isStickerVisible", isStickerVisible)
+            }
             composeBoxActionFragment!!.arguments = bundle
             composeBoxActionFragment!!.show(fm, composeBoxActionFragment!!.tag)
         }

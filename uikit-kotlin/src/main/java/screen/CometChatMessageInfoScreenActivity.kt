@@ -28,6 +28,7 @@ class CometChatMessageInfoScreenActivity : AppCompatActivity() {
     private var audioMessage: View? = null
     private var fileMessage: View? = null
     private val videoMessage: View? = null
+    private var stickerMessage: View? = null
     private var locationMessage: View? = null
 
     private var ivMap: ImageView? = null
@@ -36,6 +37,7 @@ class CometChatMessageInfoScreenActivity : AppCompatActivity() {
     private var messageText: TextView? = null
     private var messageImage: ImageView? = null
     private var messageVideo: ImageView? = null
+    private var messageSticker: ImageView? = null
     private var txtTime: TextView? = null
 //    private val sensitiveLayout: RelativeLayout? = null
 
@@ -71,6 +73,8 @@ class CometChatMessageInfoScreenActivity : AppCompatActivity() {
         imageMessage = findViewById(R.id.vwImageMessage)
         audioMessage = findViewById(R.id.vwAudioMessage)
         fileMessage = findViewById(R.id.vwFileMessage)
+        stickerMessage = findViewById(R.id.vw_sticker_message)
+        messageSticker = findViewById(R.id.sticker_view)
         locationMessage = findViewById(R.id.vwLocationMessage)
 
         messageText = findViewById(R.id.go_txt_message)
@@ -149,6 +153,14 @@ class CometChatMessageInfoScreenActivity : AppCompatActivity() {
             } else if (messageType == CometChatConstants.MESSAGE_TYPE_AUDIO) {
                 audioMessage!!.visibility = View.VISIBLE
                 audioFileSize!!.text = Utils.getFileSize(messageSize)
+            } else if (messageType == StringContract.IntentStrings.STICKERS) {
+                stickerMessage?.visibility = View.VISIBLE
+                try {
+                    val jsonObject = JSONObject(message)
+                    Glide.with(this).load(jsonObject.getString("url")).into(messageSticker!!)
+                } catch (e: JSONException) {
+                    e.printStackTrace()
+                }
             }
             else if (messageType == StringContract.IntentStrings.LOCATION) {
                 try {

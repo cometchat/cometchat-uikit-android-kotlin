@@ -5,8 +5,6 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.view.Menu
-import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.cometchat.pro.constants.CometChatConstants
@@ -84,7 +82,11 @@ class CometChatThreadMessageActivity : AppCompatActivity(), ThreadAdapter.OnMess
             if (messageType == CometChatConstants.MESSAGE_TYPE_TEXT) bundle.putString(StringContract.IntentStrings.TEXTMESSAGE, message) else if (messageType == StringContract.IntentStrings.LOCATION) {
                 bundle.putDouble(StringContract.IntentStrings.LOCATION_LATITUDE, latitude)
                 bundle.putDouble(StringContract.IntentStrings.LOCATION_LONGITUDE, longitude)
-            } else {
+            } else if (messageType == StringContract.IntentStrings.STICKERS) {
+                bundle.putString(StringContract.IntentStrings.MESSAGE_TYPE_IMAGE_URL, mediaUrl)
+                bundle.putString(StringContract.IntentStrings.MESSAGE_TYPE_IMAGE_NAME, messagefileName)
+            }
+            else {
                 bundle.putString(StringContract.IntentStrings.MESSAGE_TYPE_IMAGE_URL, mediaUrl)
                 bundle.putString(StringContract.IntentStrings.MESSAGE_TYPE_IMAGE_NAME, messagefileName)
                 bundle.putString(StringContract.IntentStrings.MESSAGE_TYPE_IMAGE_EXTENSION, mediaExtension)

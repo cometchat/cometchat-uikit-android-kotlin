@@ -2,11 +2,16 @@ package screen.threadconversation
 
 import adapter.ThreadAdapter
 import android.Manifest
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
+import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
 import android.app.ProgressDialog
 import android.content.*
 import android.content.pm.PackageManager
 import android.content.res.ColorStateList
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
@@ -15,14 +20,13 @@ import android.media.MediaRecorder
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
 import android.provider.MediaStore
 import android.provider.Settings
 import android.text.Editable
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.MenuItem
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -36,6 +40,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.target.SimpleTarget
 import com.bumptech.glide.request.transition.Transition
 import com.cometchat.pro.constants.CometChatConstants
+import com.cometchat.pro.core.CometChat
 import com.cometchat.pro.core.CometChat.*
 import com.cometchat.pro.core.MessagesRequest
 import com.cometchat.pro.exceptions.CometChatException
@@ -55,11 +60,10 @@ import listeners.*
 import org.json.JSONException
 import org.json.JSONObject
 import screen.CometChatForwardMessageScreenActivity
-import screen.CometChatGroupDetailScreenActivity
 import screen.CometChatMessageInfoScreenActivity
-import screen.CometChatUserDetailScreenActivity
 import screen.messagelist.MessageActionFragment
 import screen.messagelist.MessageActionFragment.MessageActionListener
+import utils.Extensions
 import utils.FontUtils
 import utils.MediaUtils
 import utils.Utils
@@ -95,6 +99,7 @@ class CometChatThreadMessageScreen : Fragment(), View.OnClickListener,  OnMessag
     private var ivMoreOption: ImageView? = null
     private var textMessage: TextView? = null
     private var imageMessage: ImageView? = null
+    private var stickerMessage: ImageView? = null
     private var videoMessage: VideoView? = null
     private var fileMessage: RelativeLayout? = null
     private var locationMessage: RelativeLayout? = null
@@ -172,6 +177,8 @@ class CometChatThreadMessageScreen : Fragment(), View.OnClickListener,  OnMessag
     private var sentAt: TextView? = null
     private var tvReplyCount: TextView? = null
     private var isParent = true
+    private var imageToFly: ImageView? = null
+    private var liveReactionLayout: FrameLayout? = null
 
 //    private var view: View? = null
 
@@ -237,6 +244,7 @@ class CometChatThreadMessageScreen : Fragment(), View.OnClickListener,  OnMessag
         fileName = view.findViewById<TextView>(R.id.tvFileName)
         fileSize = view.findViewById<TextView>(R.id.tvFileSize)
         fileExtension = view.findViewById<TextView>(R.id.tvFileExtension)
+        stickerMessage = view.findViewById(R.id.iv_stickerMessage)
 
         if (messageType == CometChatConstants.MESSAGE_TYPE_IMAGE) {
             imageMessage!!.setVisibility(View.VISIBLE)
@@ -255,6 +263,10 @@ class CometChatThreadMessageScreen : Fragment(), View.OnClickListener,  OnMessag
         } else if (messageType == CometChatConstants.MESSAGE_TYPE_TEXT) {
             textMessage!!.setVisibility(View.VISIBLE)
             textMessage!!.setText(message)
+        } else if (messageType == StringContract.IntentStrings.STICKERS) {
+            ivForwardMessage!!.visibility = View.GONE
+            stickerMessage?.setVisibility(View.VISIBLE)
+            Glide.with(context!!).load(message).into(stickerMessage!!)
         } else if (messageType == StringContract.IntentStrings.LOCATION) {
             initLocation()
             locationMessage!!.setVisibility(View.VISIBLE)
@@ -269,8 +281,50 @@ class CometChatThreadMessageScreen : Fragment(), View.OnClickListener,  OnMessag
         composeBox = view.findViewById(R.id.message_box)
         messageShimmer = view.findViewById(R.id.shimmer_layout)
         composeBox!!.usedIn(CometChatThreadMessageActivity::class.java.name)
+        composeBox!!.isStickerVisible = false
         composeBox!!.ivMic!!.setVisibility(View.GONE)
         composeBox!!.ivSend!!.setVisibility(View.VISIBLE)
+
+        liveReactionLayout = view.findViewById(R.id.live_reactions_layout)
+        composeBox!!.btnLiveReaction?.setOnTouchListener(object : LiveReactionListener(object : ReactionClickListener() {
+            override fun onClick(var1: View?) {
+                liveReactionLayout?.alpha = 0.1f
+                sendLiveReaction()
+            }
+
+            override fun onCancel(var1: View?) {
+                Handler().postDelayed(object : Runnable {
+                    override fun run() {
+                        if (imageToFly != null) {
+                            val animator = ObjectAnimator.ofFloat(liveReactionLayout!!, "alpha", 1f, 0.5f)
+                            animator.duration = 2000
+                            animator.start()
+                            animator.addListener(object : AnimatorListenerAdapter() {
+                                override fun onAnimationEnd(animation: Animator?) {
+                                    super.onAnimationEnd(animation)
+                                    if (imageToFly != null)
+                                        imageToFly?.clearAnimation()
+                                    liveReactionLayout?.clearAnimation()
+                                    if (typingTimer != null)
+                                        typingTimer!!.schedule(object : TimerTask() {
+                                            override fun run() {
+                                                val metaData = JSONObject()
+                                                try {
+                                                    metaData.put("reaction", "heart")
+                                                } catch (e: JSONException) {
+                                                    e.printStackTrace()
+                                                }
+                                                val typingIndicator = TypingIndicator(Id!!, type, metaData)
+                                                endTyping(typingIndicator)
+                                            }
+                                        }, 1000)
+                                }
+                            })
+                        }
+                    }
+                }, 1000)
+            }
+        }) {})
         setComposeBoxListener()
 
         rvSmartReply = view.findViewById(R.id.rv_smartReply)
@@ -378,6 +432,55 @@ class CometChatThreadMessageScreen : Fragment(), View.OnClickListener,  OnMessag
         onGoingCallClose = view.findViewById<ImageView>(R.id.close_ongoing_view)
         onGoingCallTxt = view.findViewById<TextView>(R.id.ongoing_call)
         checkOnGoingCall()
+    }
+
+    private fun sendLiveReaction() {
+        var metadata : JSONObject = JSONObject()
+        metadata.put("reaction", "heart")
+        var typingIndicator: TypingIndicator = TypingIndicator(Id!!, type, metadata)
+        CometChat.startTyping(typingIndicator)
+        setLiveReaction()
+    }
+
+    private fun setLiveReaction() {
+        liveReactionLayout?.alpha = 0.1f
+        imageToFly = ImageView(context)
+        flyImage(imageToFly!!, R.drawable.heart_reaction)
+    }
+
+    private fun flyImage(imageToFly: ImageView, resId: Int) {
+        var layoutParam: FrameLayout.LayoutParams  = FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+        )
+        layoutParam.gravity = Gravity.BOTTOM or Gravity.END
+        layoutParam.rightMargin = 16
+        liveReactionLayout?.alpha = 1.0f
+        imageToFly.layoutParams = layoutParam
+        liveReactionLayout?.addView(imageToFly)
+        val bitmap = BitmapFactory.decodeResource(context!!.resources, resId)
+        if (bitmap != null) {
+            val scaledBitmap = Bitmap.createScaledBitmap(bitmap, (bitmap.width * 0.2f).toInt(), (bitmap.height * 0.2f).toInt(), false)
+            imageToFly.setImageBitmap(scaledBitmap)
+        }
+        fadeOutAnimation(imageToFly)
+    }
+
+    private fun fadeOutAnimation(viewToAnimate: ImageView) {
+        var transition: ObjectAnimator = ObjectAnimator.ofFloat(viewToAnimate, "translationY", -400f)
+        var fadeOut: ObjectAnimator = ObjectAnimator.ofFloat(viewToAnimate, "alpha", 1f, 0f)
+        transition.repeatCount = 3
+        fadeOut.repeatCount = 3
+        fadeOut.addListener(object : AnimatorListenerAdapter() {
+            override fun onAnimationEnd(animation: Animator?) {
+                viewToAnimate.visibility = View.GONE
+            }
+        })
+        val animatorSet= AnimatorSet()
+        animatorSet.playTogether(transition, fadeOut)
+        animatorSet.duration = 1000L
+        animatorSet.interpolator = AccelerateDecelerateInterpolator()
+        animatorSet.start()
     }
 
     private fun checkOnGoingCall() {
@@ -674,7 +777,7 @@ class CometChatThreadMessageScreen : Fragment(), View.OnClickListener,  OnMessag
 
     private fun getSmartReplyList(baseMessage: BaseMessage) {
 //        val extensionList: HashMap<String, JSONObject> = Extensions.extensionCheck(baseMessage)
-        val extensionList = Utils.extensionCheck(baseMessage)
+        val extensionList = Extensions.extensionCheck(baseMessage)
         if (extensionList != null && extensionList.containsKey("smartReply")) {
             rvSmartReply!!.visibility = View.VISIBLE
             val replyObject = extensionList["smartReply"]
@@ -1096,7 +1199,18 @@ class CometChatThreadMessageScreen : Fragment(), View.OnClickListener,  OnMessag
     private fun typingIndicator(typingIndicator: TypingIndicator, show: Boolean) {
         if (messageAdapter != null) {
             if (show) {
-                if (typingIndicator.receiverType == CometChatConstants.RECEIVER_TYPE_USER) tvTypingIndicator!!.setText("is Typing...") else tvTypingIndicator!!.setText(typingIndicator.sender.name + " is Typing...")
+                if (typingIndicator.receiverType == CometChatConstants.RECEIVER_TYPE_USER) {
+                    if (typingIndicator.metadata == null)
+                        tvTypingIndicator!!.setText("is Typing...")
+                    else
+                        setLiveReaction()
+                }
+                else {
+                    if (typingIndicator.metadata == null)
+                        tvTypingIndicator!!.setText(typingIndicator.sender.name + " is Typing...")
+                    else
+                        setLiveReaction()
+                }
             } else {
                 tvTypingIndicator!!.setVisibility(View.GONE)
             }

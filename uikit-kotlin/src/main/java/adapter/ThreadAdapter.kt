@@ -28,6 +28,7 @@ import constant.StringContract
 import org.json.JSONException
 import org.json.JSONObject
 import screen.threadconversation.CometChatThreadMessageActivity
+import utils.Extensions
 import utils.FontUtils
 import utils.MediaUtils
 import utils.Utils
@@ -54,7 +55,7 @@ class ThreadAdapter(context: Context, messageList: List<BaseMessage>, type: Stri
     private val messageList: MutableList<BaseMessage> = ArrayList()
 
 
-    var context: Context? = null
+    var context: Context
 
     private val loggedInUser = CometChat.getLoggedInUser()
 
@@ -408,8 +409,14 @@ class ThreadAdapter(context: Context, messageList: List<BaseMessage>, type: Stri
 
 //        val isImageNotSafe: Boolean = Extensions.getImageModeration(context, baseMessage)
 //        val smallUrl: String = Extensions.getThumbnailGeneration(context, baseMessage)
-        viewHolder.view.goImgMessage.setImageDrawable(context!!.resources.getDrawable(R.drawable.ic_defaulf_image))
-        if ((baseMessage as MediaMessage).attachment != null) Glide.with(context!!).load(baseMessage.attachment.fileUrl).into(viewHolder.view.goImgMessage)
+        viewHolder.view.goImgMessage.setImageDrawable(context.resources.getDrawable(R.drawable.ic_defaulf_image))
+        val thumbnailUrl = Extensions.getThumbnailGeneration(context, baseMessage)
+        if (thumbnailUrl != null)
+            Glide.with(context).asBitmap().load(thumbnailUrl).into(viewHolder.view.goImgMessage)
+        else {
+            if ((baseMessage as MediaMessage).attachment != null)
+                Glide.with(context).asBitmap().load(baseMessage.attachment.fileUrl).into(viewHolder.view.goImgMessage)
+        }
 //        if (smallUrl != null) {
 //            Glide.with(context!!).asBitmap().diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true).load(smallUrl).into(object : SimpleTarget<Bitmap?>() {
 //                fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
@@ -474,7 +481,7 @@ class ThreadAdapter(context: Context, messageList: List<BaseMessage>, type: Stri
             setAvatar(viewHolder.view.ivUser, baseMessage.sender.avatar, baseMessage.sender.name)
             viewHolder.view.tvUser.setText(baseMessage.sender.name)
             if (baseMessage.deletedAt == 0L) {
-                val extensionList: HashMap<String, JSONObject> = Utils.extensionCheck(baseMessage)!!
+                val extensionList: HashMap<String, JSONObject> = Extensions.extensionCheck(baseMessage)!!
                 if (extensionList != null) {
                     if (extensionList.containsKey("linkPreview")) {
                         val linkPreviewJsonObject = extensionList["linkPreview"]
@@ -697,7 +704,7 @@ class ThreadAdapter(context: Context, messageList: List<BaseMessage>, type: Stri
 
     private fun getItemViewTypes(position: Int): Int {
         val baseMessage = messageList[position]
-        val extensionList: HashMap<String, JSONObject>? = Utils.extensionCheck(baseMessage)
+        val extensionList: HashMap<String, JSONObject>? = Extensions.extensionCheck(baseMessage)
         if (baseMessage.deletedAt == 0L) {
             if (baseMessage.category == CometChatConstants.CATEGORY_MESSAGE) {
                 return when (baseMessage.type) {

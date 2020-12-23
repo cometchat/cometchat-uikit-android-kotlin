@@ -222,6 +222,9 @@
 
     <string name="thread_in_name">Thread in %1$s</string>
     <string name="sentAtTxt">Sent at : %1$s</string>
+    <string name="sticker">sticker</string>
+    <string name="send_sticker">Send Stickers</string>
+    <string name="shared_a_sticker">Shared a Sticker</string>
 
 
 </resources>

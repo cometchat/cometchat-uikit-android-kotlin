@@ -75,6 +75,11 @@
                     tools:src="@tools:sample/backgrounds/scenic"
                     android:layout_width="match_parent"
                     android:layout_height="250dp"/>
+                <ImageView
+                    android:visibility="gone"
+                    android:id="@+id/iv_stickerMessage"
+                    android:layout_width="128dp"
+                    android:layout_height="128dp"/>
                 <VideoView
                     android:visibility="gone"
                     android:id="@+id/vv_videoMessage"
@@ -286,6 +291,7 @@
     <include layout="@layout/edit_message_layout"/>
 
     <include layout="@layout/reply_message_layout"/>
+
     <RelativeLayout
         android:id="@+id/bottom_layout"
         android:layout_alignParentBottom="true"
@@ -308,5 +314,9 @@
     </RelativeLayout>
 
     <include layout="@layout/block_user_message_layout"/>
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/live_reactions_layout"/>
 
 </RelativeLayout>

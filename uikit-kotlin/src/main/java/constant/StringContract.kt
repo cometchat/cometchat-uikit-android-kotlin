@@ -60,6 +60,8 @@ class StringContract {
         const val PARENT_ID = "parent_id"
         const val REPLY_COUNT = "reply_count"
         const val CONVERSATION_NAME = "conversation_name"
+
+        const val STICKERS = "Sticker"
     }
 
     object Tab {
@@ -95,7 +97,8 @@ class StringContract {
                 CometChatConstants.MESSAGE_TYPE_VIDEO,
                 CometChatConstants.MESSAGE_TYPE_FILE,
                 //Custom Messages
-                IntentStrings.LOCATION
+                IntentStrings.LOCATION,
+                IntentStrings.STICKERS
         ))
         var messageTypesForGroup: List<String> = ArrayList(Arrays.asList(
                 CometChatConstants.MESSAGE_TYPE_CUSTOM,
@@ -107,7 +110,8 @@ class StringContract {
                 //For Group Actions
                 CometChatConstants.ActionKeys.ACTION_TYPE_GROUP_MEMBER,
                 //Custom Messages
-                IntentStrings.LOCATION
+                IntentStrings.LOCATION,
+                IntentStrings.STICKERS
         ))
 
         var messageCategoriesForGroup: List<String> = ArrayList(Arrays.asList(

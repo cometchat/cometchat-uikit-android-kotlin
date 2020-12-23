@@ -33,4 +33,6 @@ abstract class ComposeActionListener {
     fun getFileActionView(fileIcon: ImageView) {
         fileIcon.visibility = View.VISIBLE
     }
+
+    open fun onStickerActionClicked() {}
 }

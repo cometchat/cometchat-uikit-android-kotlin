@@ -12,6 +12,7 @@ import com.cometchat.pro.constants.CometChatConstants
 import com.cometchat.pro.models.BaseMessage
 import com.cometchat.pro.models.MediaMessage
 import com.cometchat.pro.uikit.R
+import utils.Extensions
 import utils.FontUtils
 import utils.MediaUtils
 import java.util.*
@@ -121,7 +122,12 @@ class SharedMediaAdapter(context: Context, messageArrayList: List<BaseMessage>) 
 
     private fun setImageData(viewHolder: ImageViewHolder, i: Int) {
         val message = messageArrayList[i]
-        Glide.with(context).load((message as MediaMessage).attachment.fileUrl).into(viewHolder.imageView)
+        var thumbnailUrl = Extensions.getThumbnailGeneration(context, message)
+        if (thumbnailUrl != null)
+            Glide.with(context).load(thumbnailUrl).into(viewHolder.imageView)
+        else {
+            Glide.with(context).load((message as MediaMessage).attachment.fileUrl).into(viewHolder.imageView)
+        }
         viewHolder.itemView.setTag(R.string.baseMessage, message)
     }
 

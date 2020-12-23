@@ -11,7 +11,6 @@ import android.graphics.Typeface
 import android.graphics.drawable.ColorDrawable
 import android.media.MediaPlayer
 import android.net.Uri
-import android.os.Bundle
 import android.text.Spannable
 import android.util.Log
 import android.view.LayoutInflater
@@ -40,10 +39,7 @@ import listeners.StickyHeaderAdapter
 import org.json.JSONException
 import screen.messagelist.CometChatMessageListActivity
 import screen.threadconversation.CometChatThreadMessageActivity
-import utils.FontUtils
-import utils.MediaUtils
-import utils.Utils
-import utils.ZoomIv
+import utils.*
 import java.util.*
 
 /**
@@ -98,6 +94,8 @@ class MessageAdapter(context: Context, messageList: List<BaseMessage>, type: Str
         private const val LEFT_REPLY_TEXT_MESSAGE = 789
         private const val LEFT_LOCATION_CUSTOM_MESSAGE = 31
         private const val RIGHT_LOCATION_CUSTOM_MESSAGE = 32
+        private const val RIGHT_STICKER_MESSAGE = 21
+        private const val LEFT_STICKER_MESSAGE = 22
 
         var LATITUDE = 0.0
         var LONGITUDE = 0.0
@@ -292,6 +290,18 @@ class MessageAdapter(context: Context, messageList: List<BaseMessage>, type: Str
                 locationCustomMessageItemBinding.root.tag = LEFT_LOCATION_CUSTOM_MESSAGE
                 LeftLocationMessageViewHolder(locationCustomMessageItemBinding)
             }
+            LEFT_STICKER_MESSAGE -> {
+                val layoutInflater = LayoutInflater.from(parent.context)
+                val messageStickerItemBinding: MessageLeftStickerItemBinding = DataBindingUtil.inflate(layoutInflater, R.layout.message_left_sticker_item, parent, false)
+                messageStickerItemBinding.root.tag = LEFT_STICKER_MESSAGE
+                LeftStickerMessageViewHolder(messageStickerItemBinding)
+            }
+            RIGHT_STICKER_MESSAGE -> {
+                val layoutInflater = LayoutInflater.from(parent.context)
+                val messageStickerItemBinding: MessageRightStickerItemBinding = DataBindingUtil.inflate(layoutInflater, R.layout.message_right_sticker_item, parent, false)
+                messageStickerItemBinding.root.tag = RIGHT_STICKER_MESSAGE
+                RightStickerMessageViewHolder(messageStickerItemBinding)
+            }
             else -> {
                 val layoutInflater = LayoutInflater.from(parent.context)
                 val actionMessageItemBinding : CometchatActionMessageBinding = DataBindingUtil.inflate(layoutInflater, R.layout.cometchat_action_message, parent, false)
@@ -367,6 +377,156 @@ class MessageAdapter(context: Context, messageList: List<BaseMessage>, type: Str
             RIGHT_CUSTOM_MESSAGE -> setCustomData(viewHolder as RightCustomMessageViewHolder, i)
             LEFT_LOCATION_CUSTOM_MESSAGE -> setLocationData(viewHolder as LeftLocationMessageViewHolder, i)
             RIGHT_LOCATION_CUSTOM_MESSAGE -> setLocationData(viewHolder as RightLocationMessageViewHolder, i)
+            LEFT_STICKER_MESSAGE -> setStickerData(viewHolder as LeftStickerMessageViewHolder, i)
+            RIGHT_STICKER_MESSAGE -> setStickerData(viewHolder as RightStickerMessageViewHolder, i)
+        }
+    }
+
+    private fun setStickerData(viewHolder: RecyclerView.ViewHolder, i: Int) {
+        val baseMessage = messageList[i]
+        if (baseMessage != null && baseMessage.deletedAt == 0L){
+//            var viewHolder : RecyclerView.ViewHolder
+            if (viewHolder is LeftStickerMessageViewHolder){
+                if (baseMessage.sender.uid != loggedInUser.uid) {
+                    if (baseMessage.receiverType == CometChatConstants.RECEIVER_TYPE_USER) {
+                        viewHolder.view.tvUser.setVisibility(View.GONE)
+                        viewHolder.view.ivUser.setVisibility(View.GONE)
+                    } else if (baseMessage.receiverType == CometChatConstants.RECEIVER_TYPE_GROUP) {
+                        if (isUserDetailVisible) {
+                            viewHolder.view.tvUser.setVisibility(View.VISIBLE)
+                            viewHolder.view.ivUser.setVisibility(View.VISIBLE)
+                        } else {
+                            viewHolder.view.tvUser.setVisibility(View.GONE)
+                            viewHolder.view.ivUser.setVisibility(View.INVISIBLE)
+                        }
+                        setAvatar(viewHolder.view.ivUser, baseMessage.sender.avatar, baseMessage.sender.name)
+                        viewHolder.view.tvUser.setText(baseMessage.sender.name)
+                    }
+                }
+                viewHolder.view.stickerView.setImageDrawable(context.resources.getDrawable(R.drawable.ic_defaulf_image))
+                try {
+                    Glide.with(context).load((baseMessage as CustomMessage).customData.getString("url")).into(viewHolder.view.stickerView)
+                } catch (e: JSONException) {
+                    e.printStackTrace()
+                }
+                if (baseMessage.replyCount != 0) {
+                    viewHolder.view.threadReplyCount.setVisibility(View.VISIBLE)
+                    viewHolder.view.threadReplyCount.setText(baseMessage.replyCount.toString() + " Replies")
+                } else {
+                    viewHolder.view.threadReplyCount.setVisibility(View.GONE)
+                }
+                viewHolder.view.threadReplyCount.setOnClickListener {
+                    val intent = Intent(context, CometChatThreadMessageActivity::class.java)
+//            intent.putExtra(StringContract.IntentStrings.PARENT_BASEMESSAGE,baseMessage.toString());
+                    intent.putExtra(StringContract.IntentStrings.NAME, baseMessage.sender.name)
+                    intent.putExtra(StringContract.IntentStrings.AVATAR, baseMessage.sender.avatar)
+                    intent.putExtra(StringContract.IntentStrings.REPLY_COUNT, baseMessage.replyCount)
+                    intent.putExtra(StringContract.IntentStrings.UID, baseMessage.sender.name)
+                    intent.putExtra(StringContract.IntentStrings.PARENT_ID, baseMessage.id)
+                    intent.putExtra(StringContract.IntentStrings.MESSAGE_TYPE, StringContract.IntentStrings.STICKERS)
+                    intent.putExtra(StringContract.IntentStrings.SENTAT, baseMessage.sentAt)
+                    try {
+                        intent.putExtra(StringContract.IntentStrings.MESSAGE_TYPE_IMAGE_NAME, (baseMessage as CustomMessage).customData.getString("name"))
+                        intent.putExtra(StringContract.IntentStrings.MESSAGE_TYPE_IMAGE_URL, baseMessage.customData.getString("url"))
+                    } catch (e: JSONException) {
+                        e.printStackTrace()
+                    }
+                    intent.putExtra(StringContract.IntentStrings.TYPE, baseMessage.receiverType)
+                    intent.putExtra(StringContract.IntentStrings.MESSAGE_CATEGORY, baseMessage.category)
+                    if (baseMessage.receiverType == CometChatConstants.RECEIVER_TYPE_GROUP) {
+                        intent.putExtra(StringContract.IntentStrings.GUID, baseMessage.receiverUid)
+                    } else {
+                        if (baseMessage.receiverUid == loggedInUser.uid) intent.putExtra(StringContract.IntentStrings.UID, baseMessage.sender.uid) else intent.putExtra(StringContract.IntentStrings.UID, baseMessage.receiverUid)
+                    }
+                    context.startActivity(intent)
+                }
+
+
+
+                showMessageTime(viewHolder, baseMessage)
+//        if (selectedItemList.contains(baseMessage.getId()))
+                //        if (selectedItemList.contains(baseMessage.getId()))
+                viewHolder.view.txtTime.setVisibility(View.VISIBLE)
+//        else
+//            viewHolder.txtTime.setVisibility(View.GONE);
+
+
+                //        else
+//            viewHolder.txtTime.setVisibility(View.GONE);
+                viewHolder.view.stickerView.setOnLongClickListener(OnLongClickListener {
+                    if (!isLongClickEnabled && !isTextMessageClick) {
+                        isImageMessageClick = true
+                        setLongClickSelectedItem(baseMessage)
+                        messageLongClick!!.setLongMessageClick(longselectedItemList)
+                        notifyDataSetChanged()
+                    }
+                    true
+                })
+
+
+            }
+            else{
+                viewHolder as RightStickerMessageViewHolder
+                viewHolder.view.stickerView.setImageDrawable(context.resources.getDrawable(R.drawable.ic_defaulf_image))
+                try {
+                    Glide.with(context).load((baseMessage as CustomMessage).customData.getString("url")).into(viewHolder.view.stickerView)
+                } catch (e: JSONException) {
+                    e.printStackTrace()
+                }
+                if (baseMessage.replyCount != 0) {
+                    viewHolder.view.threadReplyCount.setVisibility(View.VISIBLE)
+                    viewHolder.view.threadReplyCount.setText(baseMessage.replyCount.toString() + " Replies")
+                } else {
+                    viewHolder.view.threadReplyCount.setVisibility(View.GONE)
+                }
+                viewHolder.view.threadReplyCount.setOnClickListener {
+                    val intent = Intent(context, CometChatThreadMessageActivity::class.java)
+//            intent.putExtra(StringContract.IntentStrings.PARENT_BASEMESSAGE,baseMessage.toString());
+                    intent.putExtra(StringContract.IntentStrings.NAME, baseMessage.sender.name)
+                    intent.putExtra(StringContract.IntentStrings.AVATAR, baseMessage.sender.avatar)
+                    intent.putExtra(StringContract.IntentStrings.REPLY_COUNT, baseMessage.replyCount)
+                    intent.putExtra(StringContract.IntentStrings.UID, baseMessage.sender.name)
+                    intent.putExtra(StringContract.IntentStrings.PARENT_ID, baseMessage.id)
+                    intent.putExtra(StringContract.IntentStrings.MESSAGE_TYPE, StringContract.IntentStrings.STICKERS)
+                    intent.putExtra(StringContract.IntentStrings.SENTAT, baseMessage.sentAt)
+                    try {
+                        intent.putExtra(StringContract.IntentStrings.MESSAGE_TYPE_IMAGE_NAME, (baseMessage as CustomMessage).customData.getString("name"))
+                        intent.putExtra(StringContract.IntentStrings.MESSAGE_TYPE_IMAGE_URL, baseMessage.customData.getString("url"))
+                    } catch (e: JSONException) {
+                        e.printStackTrace()
+                    }
+                    intent.putExtra(StringContract.IntentStrings.TYPE, baseMessage.receiverType)
+                    intent.putExtra(StringContract.IntentStrings.MESSAGE_CATEGORY, baseMessage.category)
+                    if (baseMessage.receiverType == CometChatConstants.RECEIVER_TYPE_GROUP) {
+                        intent.putExtra(StringContract.IntentStrings.GUID, baseMessage.receiverUid)
+                    } else {
+                        if (baseMessage.receiverUid == loggedInUser.uid) intent.putExtra(StringContract.IntentStrings.UID, baseMessage.sender.uid) else intent.putExtra(StringContract.IntentStrings.UID, baseMessage.receiverUid)
+                    }
+                    context.startActivity(intent)
+                }
+
+
+
+                showMessageTime(viewHolder, baseMessage)
+//        if (selectedItemList.contains(baseMessage.getId()))
+                //        if (selectedItemList.contains(baseMessage.getId()))
+                viewHolder.view.txtTime.setVisibility(View.VISIBLE)
+//        else
+//            viewHolder.txtTime.setVisibility(View.GONE);
+
+
+                //        else
+//            viewHolder.txtTime.setVisibility(View.GONE);
+                viewHolder.view.stickerView.setOnLongClickListener(OnLongClickListener {
+                    if (!isLongClickEnabled && !isTextMessageClick) {
+                        isImageMessageClick = true
+                        setLongClickSelectedItem(baseMessage)
+                        messageLongClick!!.setLongMessageClick(longselectedItemList)
+                        notifyDataSetChanged()
+                    }
+                    true
+                })
+            }
         }
     }
 
@@ -903,6 +1063,7 @@ class MessageAdapter(context: Context, messageList: List<BaseMessage>, type: Str
      */
     private fun setImageData(view: RecyclerView.ViewHolder, i: Int) {
         val baseMessage = messageList[i]
+        Log.d(TAG, "setImageData: imgBasemsg " + baseMessage)
         var viewHolder : RecyclerView.ViewHolder
         if (view is LeftImageMessageViewHolder) {
             viewHolder = view as LeftImageMessageViewHolder
@@ -921,7 +1082,12 @@ class MessageAdapter(context: Context, messageList: List<BaseMessage>, type: Str
                 viewHolder.view.tvUser.text = baseMessage.sender.name
             }
             viewHolder.view.goImgMessage.setImageDrawable(context!!.resources.getDrawable(R.drawable.ic_defaulf_image))
-            if ((baseMessage as MediaMessage).attachment != null) Glide.with(context).load(baseMessage.attachment.fileUrl).into(viewHolder.view.goImgMessage)
+            var thumbnailUrl = Extensions.getThumbnailGeneration(context, baseMessage)
+            if (thumbnailUrl != null)
+                Glide.with(context).load(thumbnailUrl).into(viewHolder.view.goImgMessage)
+            else {
+                if ((baseMessage as MediaMessage).attachment != null)
+                    Glide.with(context).load(baseMessage.attachment.fileUrl).into(viewHolder.view.goImgMessage)}
             showMessageTime(viewHolder, baseMessage)
 //            if (selectedItemList.contains(baseMessage.getId()))
             viewHolder.view.txtTime.visibility = View.VISIBLE
@@ -945,7 +1111,7 @@ class MessageAdapter(context: Context, messageList: List<BaseMessage>, type: Str
                 intent.putExtra(StringContract.IntentStrings.PARENT_ID, baseMessage.getId())
                 intent.putExtra(StringContract.IntentStrings.MESSAGE_TYPE, baseMessage.getType())
                 intent.putExtra(StringContract.IntentStrings.SENTAT, baseMessage.getSentAt())
-                intent.putExtra(StringContract.IntentStrings.MESSAGE_TYPE_IMAGE_NAME, baseMessage.attachment.fileName)
+                intent.putExtra(StringContract.IntentStrings.MESSAGE_TYPE_IMAGE_NAME, (baseMessage as MediaMessage).attachment.fileName)
                 intent.putExtra(StringContract.IntentStrings.MESSAGE_TYPE_IMAGE_EXTENSION, baseMessage.attachment.fileExtension)
                 intent.putExtra(StringContract.IntentStrings.MESSAGE_TYPE_IMAGE_URL, baseMessage.attachment.fileUrl)
                 intent.putExtra(StringContract.IntentStrings.MESSAGE_TYPE_IMAGE_SIZE, baseMessage.attachment.fileSize)
@@ -974,8 +1140,11 @@ class MessageAdapter(context: Context, messageList: List<BaseMessage>, type: Str
             }
         } else {
             viewHolder = view as RightImageMessageViewHolder
-            viewHolder.view.goImgMessage.setImageDrawable(context!!.resources.getDrawable(R.drawable.ic_defaulf_image))
-            if ((baseMessage as MediaMessage).attachment != null) Glide.with(context).load(baseMessage.attachment.fileUrl).into(viewHolder.view.goImgMessage)
+            viewHolder.view.goImgMessage.setImageDrawable(context.resources.getDrawable(R.drawable.ic_defaulf_image))
+            var thumbnailUrl = Extensions.getThumbnailGeneration(context, baseMessage)
+            if (thumbnailUrl != null)
+                Glide.with(context).load(thumbnailUrl).into(viewHolder.view.goImgMessage)
+            else if ((baseMessage as MediaMessage).attachment != null) Glide.with(context).load(baseMessage.attachment.fileUrl).into(viewHolder.view.goImgMessage)
             showMessageTime(viewHolder, baseMessage)
 //            if (selectedItemList.contains(baseMessage.getId()))
             viewHolder.view.txtTime.visibility = View.VISIBLE
@@ -998,7 +1167,7 @@ class MessageAdapter(context: Context, messageList: List<BaseMessage>, type: Str
                 intent.putExtra(StringContract.IntentStrings.PARENT_ID, baseMessage.getId())
                 intent.putExtra(StringContract.IntentStrings.MESSAGE_TYPE, baseMessage.getType())
                 intent.putExtra(StringContract.IntentStrings.SENTAT, baseMessage.getSentAt())
-                intent.putExtra(StringContract.IntentStrings.MESSAGE_TYPE_IMAGE_NAME, baseMessage.attachment.fileName)
+                intent.putExtra(StringContract.IntentStrings.MESSAGE_TYPE_IMAGE_NAME, (baseMessage as MediaMessage).attachment.fileName)
                 intent.putExtra(StringContract.IntentStrings.MESSAGE_TYPE_IMAGE_EXTENSION, baseMessage.attachment.fileExtension)
                 intent.putExtra(StringContract.IntentStrings.MESSAGE_TYPE_IMAGE_URL, baseMessage.attachment.fileUrl)
                 intent.putExtra(StringContract.IntentStrings.MESSAGE_TYPE_IMAGE_SIZE, baseMessage.attachment.fileSize)
@@ -1249,7 +1418,7 @@ class MessageAdapter(context: Context, messageList: List<BaseMessage>, type: Str
         } else if (viewHolder is LeftLocationMessageViewHolder){
             setStatusIcon(viewHolder.view.txtTime, baseMessage)
         } else if (viewHolder is LeftCustomMessageViewHolder) {
-            setStatusIcon(viewHolder.view.txtTime,baseMessage)
+            setStatusIcon(viewHolder.view.txtTime, baseMessage)
         }
 
 
@@ -1268,7 +1437,7 @@ class MessageAdapter(context: Context, messageList: List<BaseMessage>, type: Str
         } else if (viewHolder is RightLocationMessageViewHolder){
             setStatusIcon(viewHolder.view.txtTime, baseMessage)
         } else if (viewHolder is RightCustomMessageViewHolder) {
-            setStatusIcon(viewHolder.view.txtTime,baseMessage)
+            setStatusIcon(viewHolder.view.txtTime, baseMessage)
         }
     }
 
@@ -1397,6 +1566,9 @@ class MessageAdapter(context: Context, messageList: List<BaseMessage>, type: Str
                         } else if (messageType == StringContract.IntentStrings.LOCATION) {
                             viewHolder.view.replyItem.replyMessage.setText(String.format(context.resources.getString(R.string.shared_location_address), "").trim { it <= ' ' })
                             viewHolder.view.replyItem.replyMessage.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_near_me_24dp, 0, 0, 0)
+                        } else if (messageType == StringContract.IntentStrings.STICKERS) {
+                            viewHolder.view.replyItem.replyMessage.setText(String.format(context.getString(R.string.shared_a_sticker)))
+                            viewHolder.view.replyItem.replyMessage.setCompoundDrawablesWithIntrinsicBounds(R.drawable.default_sticker, 0, 0, 0)
                         }
                     } catch (e: java.lang.Exception) {
                         Log.e(TAG, "setTextData: " + e.message)
@@ -1505,6 +1677,9 @@ class MessageAdapter(context: Context, messageList: List<BaseMessage>, type: Str
                         } else if (messageType == StringContract.IntentStrings.LOCATION) {
                             viewHolder.view.replyItem.replyMessage.setText(String.format(context.resources.getString(R.string.shared_location_address), "").trim { it <= ' ' })
                             viewHolder.view.replyItem.replyMessage.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_near_me_24dp, 0, 0, 0)
+                        } else if (messageType == StringContract.IntentStrings.STICKERS) {
+                            viewHolder.view.replyItem.replyMessage.setText(String.format(context.getString(R.string.shared_a_sticker)))
+                            viewHolder.view.replyItem.replyMessage.setCompoundDrawablesWithIntrinsicBounds(R.drawable.default_sticker, 0, 0, 0)
                         }
 
                     } catch (e: java.lang.Exception) {
@@ -1646,7 +1821,7 @@ class MessageAdapter(context: Context, messageList: List<BaseMessage>, type: Str
                 }
 
                 if (baseMessage.deletedAt == 0L) {
-                    val extensionList = Utils.extensionCheck(baseMessage)
+                    val extensionList = Extensions.extensionCheck(baseMessage)
                     if (extensionList != null) {
                         if (extensionList.containsKey("linkPreview")) {
                             val linkPreviewJsonObject = extensionList["linkPreview"]
@@ -1751,7 +1926,7 @@ class MessageAdapter(context: Context, messageList: List<BaseMessage>, type: Str
             } else {
                 viewHolder = view as RightLinkMessageViewHolder
                 if (baseMessage.deletedAt == 0L) {
-                    val extensionList = Utils.extensionCheck(baseMessage)
+                    val extensionList = Extensions.extensionCheck(baseMessage)
                     if (extensionList != null) {
                         if (extensionList.containsKey("linkPreview")) {
                             val linkPreviewJsonObject = extensionList["linkPreview"]
@@ -1920,7 +2095,7 @@ class MessageAdapter(context: Context, messageList: List<BaseMessage>, type: Str
      */
     private fun getItemViewTypes(position: Int): Int {
         val baseMessage = messageList[position]
-        val extensionList = Utils.extensionCheck(baseMessage)
+        val extensionList = Extensions.extensionCheck(baseMessage)
         if (baseMessage.deletedAt == 0L) {
             if (baseMessage.category == CometChatConstants.CATEGORY_MESSAGE) {
                 return when (baseMessage.type) {
@@ -1965,16 +2140,20 @@ class MessageAdapter(context: Context, messageList: List<BaseMessage>, type: Str
                     return CALL_MESSAGE
                 } else if (baseMessage.category == CometChatConstants.CATEGORY_CUSTOM) {
                     if (baseMessage.sender.uid == loggedInUser.uid) {
-                        if (baseMessage.type.equals(StringContract.IntentStrings.LOCATION, ignoreCase = true))
-                            return RIGHT_LOCATION_CUSTOM_MESSAGE
+                        return if (baseMessage.type.equals(StringContract.IntentStrings.LOCATION, ignoreCase = true))
+                            RIGHT_LOCATION_CUSTOM_MESSAGE
+                        else if (baseMessage.type.equals(StringContract.IntentStrings.STICKERS, ignoreCase = true))
+                            RIGHT_STICKER_MESSAGE
                         else
-                            return RIGHT_CUSTOM_MESSAGE
+                            RIGHT_CUSTOM_MESSAGE
                     }
                     else {
-                        if (baseMessage.type.equals(StringContract.IntentStrings.LOCATION, ignoreCase = true))
-                            return LEFT_LOCATION_CUSTOM_MESSAGE
+                        return if (baseMessage.type.equals(StringContract.IntentStrings.LOCATION, ignoreCase = true))
+                            LEFT_LOCATION_CUSTOM_MESSAGE
+                        else if (baseMessage.type.equals(StringContract.IntentStrings.STICKERS, ignoreCase = true))
+                            LEFT_STICKER_MESSAGE
                         else
-                            return LEFT_CUSTOM_MESSAGE
+                            LEFT_CUSTOM_MESSAGE
                     }
                 }
             }
@@ -2132,6 +2311,11 @@ class MessageAdapter(context: Context, messageList: List<BaseMessage>, type: Str
     inner class LeftLocationMessageViewHolder(val view: LeftLocationMessageItemBinding): RecyclerView.ViewHolder(view.root)
 
     inner class RightLocationMessageViewHolder(val view: RightLocationMessageItemBinding) : RecyclerView.ViewHolder(view.root)
+
+    //sticker
+    inner class LeftStickerMessageViewHolder(val view: MessageLeftStickerItemBinding): RecyclerView.ViewHolder(view.root)
+
+    inner class RightStickerMessageViewHolder(val view: MessageRightStickerItemBinding): RecyclerView.ViewHolder(view.root)
 
 //    inner class CustomMessageViewHolder internal constructor(view: View) : RecyclerView.ViewHolder(view) {
 //        val txtMessage: TextView

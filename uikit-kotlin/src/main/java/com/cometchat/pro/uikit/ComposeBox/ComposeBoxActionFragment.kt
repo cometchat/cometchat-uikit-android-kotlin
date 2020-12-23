@@ -18,12 +18,14 @@ class ComposeBoxActionFragment : BottomSheetDialogFragment() {
     private var fileMessage: TextView? = null
     private var audioMessage: TextView? = null
     private var locationMessage: TextView? = null
+    private var stickerMessage: TextView? = null
 
     private var isGalleryVisible = false
     private var isCameraVisible = false
     private var isAudioVisible = false
     private var isFileVisible = false
     private var isLocationVisible = false
+    private var isStickerVisible = false
 
     private var composeBoxActionListener: ComposeBoxActionListener? = null
 
@@ -36,6 +38,7 @@ class ComposeBoxActionFragment : BottomSheetDialogFragment() {
         isFileVisible = arguments!!.getBoolean("isFileVisible")
         isAudioVisible = arguments!!.getBoolean("isAudioVisible")
         isLocationVisible = arguments!!.getBoolean("isLocationVisible")
+        isStickerVisible = arguments!!.getBoolean("isStickerVisible")
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -57,12 +60,14 @@ class ComposeBoxActionFragment : BottomSheetDialogFragment() {
         fileMessage = view.findViewById(R.id.file_message)
         audioMessage = view.findViewById(R.id.audio_message)
         locationMessage = view.findViewById(R.id.location_message)
+        stickerMessage = view.findViewById(R.id.sticker_message)
 
         if (isGalleryVisible) galleryMessage!!.setVisibility(View.VISIBLE) else galleryMessage!!.setVisibility(View.GONE)
         if (isCameraVisible) cameraMessage!!.setVisibility(View.VISIBLE) else cameraMessage!!.setVisibility(View.GONE)
         if (isFileVisible) fileMessage!!.setVisibility(View.VISIBLE) else fileMessage!!.setVisibility(View.GONE)
         if (isAudioVisible) audioMessage!!.setVisibility(View.VISIBLE) else audioMessage!!.setVisibility(View.GONE)
         if (isLocationVisible) locationMessage!!.setVisibility(View.VISIBLE) else locationMessage!!.setVisibility(View.GONE)
+        if (isStickerVisible) stickerMessage!!.visibility = View.VISIBLE else stickerMessage!!.visibility = View.GONE
 
         galleryMessage!!.setOnClickListener {
             if (composeBoxActionListener != null) composeBoxActionListener!!.onGalleryClick()
@@ -84,6 +89,10 @@ class ComposeBoxActionFragment : BottomSheetDialogFragment() {
             if (composeBoxActionListener != null) composeBoxActionListener!!.onLocationClick()
             dismiss()
         }
+        stickerMessage!!.setOnClickListener {
+            if (composeBoxActionListener != null) composeBoxActionListener!!.onStickerClick()
+            dismiss()
+        }
 
         return view
     }
@@ -98,5 +107,6 @@ class ComposeBoxActionFragment : BottomSheetDialogFragment() {
         fun onFileClick()
         fun onAudioClick()
         fun onLocationClick()
+        fun onStickerClick()
     }
 }
