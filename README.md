@@ -1,65 +1,218 @@
-# android-kotlin-chat-ui-kit
-<br/><br/>
-<div>
-<img align="left" src="https://github.com/cometchat-pro-samples/android-kotlin-chat-app/blob/master/Screenshot/main.png">  </div>
-<br/><br/><br/>
+<div style="width:100%">
+    <div style="width:50%; display:inline-block">
+        <p align="center">
+        <img align="center" alt="" src="https://avatars2.githubusercontent.com/u/45484907?s=200&v=4">
+        </p>
+    </div>
+</div>
 
-CometChat Kitchen Sink Sample App (built using <b>CometChat UIKit</b>) is a fully functional messaging app capable of <b>one-on-one</b> (private) and <b>group messaging</b> as well as <b>Calling</b>. This sample app enables users to send <b>text</b> and <b>multimedia messages</b> like <b>images, videos, documents</b>. Also, users can make <b>Audio calls</b> and <b>Video calls</b> to other users or groups.**
+<br></br><br></br>
 
-## Prerequisites
+# Android Kotlin Chat UI Kit
 
-Before you begin, ensure you have met the following requirements:
+The **UI Kit** library is collection of custom **UI Components** and **UI Screens** design to build chat application within few minutes. **UI kit** is designed to avoid boilerplate code for building UI,it has three different ways to build a chat application with fully customizable UI. It will help developers to build a chat application within using various **UI Components**.
+</br></br>
 
-The **CometChat Kitchen Sink** user must created an app in  **CometChat Dashboard**
+![Platform](https://img.shields.io/badge/Platform-Android-brightgreen.svg)
+![Platform](https://img.shields.io/badge/Language-Kotlin-yellowgreen.svg)
+![GitHub repo size](https://img.shields.io/github/repo-size/cometchat-pro/android-kotlin-chat-ui-kit)
+![GitHub contributors](https://img.shields.io/github/contributors/cometchat-pro/android-kotlin-chat-ui-kit)
+![GitHub stars](https://img.shields.io/github/stars/cometchat-pro/android-kotlin-chat-ui-kit?style=social)
+![Twitter Follow](https://img.shields.io/twitter/follow/cometchat?style=social)
 
-###  **Create app in CometChat Dashboard**
+---
 
-<a href="https://app.cometchat.com" target="_blank">Signup for CometChat</a> and then:
+## Prerequisites :star:
+Before you begin, ensure you have met the following requirements:<br/>
+✅ &nbsp; You have `Android Studio` installed in your machine <br/>
+✅ &nbsp; Android kotlin Chat UI Kit works for the Android devices from Android 6.0 and above <br/>
+✅ &nbsp; You have read [CometChat Key Concepts](https://prodocs.cometchat.com/docs/concepts).<br/>
 
-1. Create a new app: Enter a name & region  then hit the **Add App** button
-2. Head over to the **API & Auth Keys** section and click on the **Create API Key** button
-3. Enter a name and select the scope as **Auth Only**
-4. Now note the **API Key** , **App ID**  and **Region Code**
+---
 
+## Installing Android Kotlin Chat UI Kit 
+## Setup :wrench:
+To install Android Kotlin UI Kit, you need to first register on CometChat Dashboard. [Click here to sign up](https://app.cometchat.com/login).
 
-## Table of Contents
-
-1. [Installation](#installation)
-
-2. [Running the sample app](#running-the-sample-app)
-
-3. [Learn more about UI-Kit](#learn-more-about-ui-kit)
-
-4. [Troubleshooting](#troubleshooting)
-
-
-## Installation
-
-1. Simply clone the project from [android-chat-ui-kit-app ](https://github.com/cometchat-pro-samples/android-kotlin-chat-app/archive/master.zip) repository. After cloning the repository:
+###  i. Get your Application Keys :key:
+- Create a new app: Click **Add App** option available  →  Enter App Name & other information  → Create App
+- You will find `APP_ID`, `API_KEY` and `REGION` key at top in **QuickStart** section or else go to "API & Auth Keys" section and copy the `APP_ID`, `API_KEY` and `REGION` key from the "Auth Only API Key" tab.
+<img align="center" src="https://github.com/cometchat-pro-samples/android-kotlin-chat-app/blob/master/Screenshot/qs.png"/>
 
 
-## Running the sample app
+---
 
-To Run to sample app you have to do the following changes by Adding **APP_ID**, **API_KEY** and  **REGION_CODE**
+###  ii. Add the CometChat Dependency
 
-   You can obtain your  *APP_ID*, *API_KEY* and *REGION_CODE* from [CometChat-Pro Dashboard](https://app.cometchat.io/)
+First, add the repository URL to the project level build.gradle file in the repositories block under the allprojects section.
+```groovy
+allprojects {
+	repositories {
+		maven {
+			url "https://dl.bintray.com/cometchat/pro"
+		}
+	}
+}
+```
 
-   - Open the project in Android Studio.
+Then, add CometChat to the app level build.gradle file in the dependencies section.
+```groovy
+dependencies {
+	implementation 'com.cometchat:pro-android-chat-sdk:2.1.4'
+}
+```
+```groovy
+android {
+	defaultConfig {
+		manifestPlaceholders = [file_provider: "YOUR_PACKAGE_NAME"] 
+		//add your application package.
+	}
+}
+```
 
-   - Modify `APP_ID` and `API_KEY` and `REGION` with your own .
+As the UI Kit uses dataBinding you must enable dataBinding to use UI Kit. To configure your app to use data binding, add the dataBinding element to your build.gradle file in the app module, as shown in the following example:
+```groovy
+android {
+	...
+	dataBinding {
+		enabled = true
+	}
+}
+```
+Finally, add the below lines android section of the app level gradle file
+```groovy
+android {
+	compileOptions {
+		sourceCompatibility JavaVersion.VERSION_1_8
+		targetCompatibility JavaVersion.VERSION_1_8
+	}
+}
+```
+## Configure CometChat inside your app
+### i. Initialize CometChat
+The `init()` method initializes the settings required for CometChat. We suggest calling the init() method on app startup, preferably in the onCreate() method of the Application class.
 
-   -  Select demo users or enter the **UID** at the time of login once the app is launched.
+```kotlin
+private val appID = "APP_ID"
+private val region = "REGION"
+val appSettings = AppSettingsBuilder().subscribePresenceForAllUsers().setRegion(region).build()
+			
+CometChat.init(this, appID, appSettings, object : CallbackListener<String>() {
+    override fun onSuccess(successMessage: String) {
+        Log.d(TAG, "Initialization completed successfully")
+    }
 
-<img align="center" width="100%" height="auto"
-src="https://github.com/cometchat-pro-samples/android-kotlin-chat-app/blob/master/Screenshot/Screen%20Shot%202020-01-30%20at%206.39.08%20PM.png">
+    override fun onError(e: CometChatException) {
+         Log.d(TAG, "Initialization failed with exception: "+e.message)
+    }
+})
+```
 
-Build and run the Sample App.
+:information_source: &nbsp; **Note :
+Make sure you replace the APP_ID with your CometChat `APP ID` and REGION with your app's `REGION` in the above code.**
 
-## Learn more about UI-Kit
+---
 
-Learn more about how to integrate [UI Kit](https://github.com/cometchat-pro/android-chat-ui-kit/blob/master/README.md) inside your app.
+### ii.Log in your User :user:
+The `login()` method returns the User object containing all the information of the logged-in user.
 
+```kotlin
+private val UID = "SUPERHERO1"
+private val AUTH_KEY = "Enter AUTH_KEY"
+if (CometChat.getLoggedInUser() == null) {
+    CometChat.login(UID, AUTH_KEY, object : CallbackListener<User?>() {
+        override fun onSuccess(user: User?) {
+		Log.d(TAG, "Login Successful : "+user.toString())
+    }
+
+        override fun onError(e: CometChatException) {
+		Log.d(TAG, "Login failed with exception: " + e.message);
+        }
+    })
+} else {
+  // User already logged in
+}
+```
+:information_source: &nbsp; **Note :**
+* The login() method needs to be called only once.
+* Make sure you replace the `AUTH_KEY` with your CometChat AUTH Key in the above code.
+* We have setup 5 users for testing having UIDs: `SUPERHERO1`, `SUPERHERO2`, `SUPERHERO3`, `SUPERHERO4` and `SUPERHERO5`.
+
+---
+
+
+## Add UI Kit Library to your project
+To integrate CometChat kotlin UIKit inside your app. Kindly follow the below steps:
+
+1. Simply clone the UI Kit-Kotlin Library from [android-kotlin-chat-uikit](https://github.com/cometchat-pro/android-kotlin-chat-ui-kit) repository.
+2. Import uikit-kotlin Module from Module Settings. ( To know how to import `uikit-kotlin` as Module visit this [link](https://prodocs.cometchat.com/docs/android-ui-kit-setup) )
+3. If the Library is added successfully, it will look like mentioned in the below image.
+
+<img align="center" width="auto" height="auto" src="https://github.com/cometchat-pro-samples/android-kotlin-chat-app/blob/master/Screenshot/Screen%20Shot%202019-12-23%20at%207.37.37%20PM.png">
+
+4. Next steps is to adding necessary dependancies inside your app to integrate UI Kit-Kotlin.
+
+* To use UI Kit-Kotlin you have to add Material Design Dependency as the UI Kit uses Material Design Components.
+```groovy
+implementation 'com.google.android.material:material:<version>'
+```
+
+:information_source: &nbsp; **Note :**
+* As **UI Kit-Kotlin** is using material components your app's theme should extend `Theme.MaterialComponents`. Follow the guide on [Getting started Material Components](https://material.io/develop/android/docs/getting-started)
+
+The following is the list of Material Components themes you can use to get the latest component styles and theme-level attributes.
+
+`Theme.MaterialComponents` </br>
+`Theme.MaterialComponents.NoActionBar`  </br>
+`Theme.MaterialComponents.Light` </br>
+`Theme.MaterialComponents.Light.NoActionBar` </br>
+`Theme.MaterialComponents.Light.DarkActionBar` </br>
+`Theme.MaterialComponents.DayNight` </br>
+`Theme.MaterialComponents.DayNight.NoActionBar` </br>
+`Theme.MaterialComponents.DayNight.DarkActionBar` </br>
+
+Update your app theme to inherit from one of these themes, e.g.:
+```xml
+<style name="AppTheme" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
+
+    <!-- Customize your theme here. -->
+
+</style>
+```
+
+## Launch UI Unified
+**UI Unified** is a way to launch a fully working chat application using the **CometChat Kitchen Sink**. In UI Unified all the UI Screens and UI Components working together to give the full experience of a chat application with minimal coding effort.  
+
+To use Unified UI user has to launch `CometChatUnified` class
+
+Add the following code snippet in onSuccess of CometChat login.
+```kotlin
+startActivity(Intent(this@YourActivity, CometChatUnified::class.java))
+```
+<img align="center" width="100%" height="auto" src="https://github.com/cometchat-pro/android-kotlin-chat-app/blob/master/Screenshot/UI%20Unified.png">
+
+---
+
+## Checkout our sample apps
+### Kotlin:
+Visit our [Kotlin sample app](https://github.com/cometchat-pro/android-kotlin-chat-app) repo to run the kotlin sample app.
+### Java:
+Visit our [Java sample app](https://github.com/cometchat-pro/android-java-chat-app) repo to run the Java sample app.
 
 ## Troubleshooting
+- To read the full documentation on UI Kit integration visit our [Documentation](https://prodocs.cometchat.com/docs/android-kotlin-ui-kit).
+- Facing any issues while integrating or installing the UI Kit please <a href="https://app.cometchat.io/"> connect with us via real time support present in CometChat Dashboard.</a>.
 
-Facing any issues while integrating or installing the UI Kit please <a href="https://forum.cometchat.com/"> visit our forum</a>.
+## Contributors
+Thanks to the following people who have contributed to this project:<br/>
+[@poojashivane](https://github.com/PoojaShivane)
+
+		
+## :mailbox: Contact 
+Contact us via real time support present in [CometChat Dashboard](https://app.cometchat.io/).
+
+## License
+
+This project uses the following license: [License](https://github.com/cometchat-pro/.github/blob/master/LICENSE).
+
+

@@ -11,7 +11,7 @@ class StringContract {
     }
 
     object AppInfo {
-        var API_KEY = "";
+        var AUTH_KEY = "";
     }
     object IntentStrings {
         const val INTENT_MEDIA_MESSAGE = "intent_media_message"

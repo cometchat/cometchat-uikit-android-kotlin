@@ -115,8 +115,8 @@ class CometChatUserInfoScreen constructor() : Fragment() {
     }
 
     private fun updateUser(user: User) {
-        val apikey = StringContract.AppInfo.API_KEY;
-        CometChat.updateUser(user, apikey, object : CallbackListener<User?>() {
+        val authkey = StringContract.AppInfo.AUTH_KEY;
+        CometChat.updateUser(user, authkey, object : CallbackListener<User?>() {
             public override fun onSuccess(user: User?) {
                 if (getContext() != null) Toast.makeText(getContext(), "Updated User Successfull", Toast.LENGTH_LONG).show()
                 moreInfoScreenBinding!!.setUser(user)
