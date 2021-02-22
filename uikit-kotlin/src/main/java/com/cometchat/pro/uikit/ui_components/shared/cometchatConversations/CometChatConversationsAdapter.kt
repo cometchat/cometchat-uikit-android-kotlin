@@ -3,6 +3,7 @@ package com.cometchat.pro.uikit.ui_components.shared.cometchatConversations
 import com.cometchat.pro.uikit.ui_components.shared.cometchatConversations.CometChatConversationsAdapter.ConversationViewHolder
 import android.content.Context
 import android.os.Build
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,11 +14,16 @@ import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.cometchat.pro.constants.CometChatConstants
 import com.cometchat.pro.core.CometChat
+import com.cometchat.pro.exceptions.CometChatException
 import com.cometchat.pro.models.*
 import com.cometchat.pro.uikit.R
 import com.cometchat.pro.uikit.databinding.CometchatConversationListItemBinding
+import com.cometchat.pro.uikit.ui_components.cometchat_ui.CometChatUI
 import com.cometchat.pro.uikit.ui_resources.utils.FontUtils
 import com.cometchat.pro.uikit.ui_resources.utils.Utils
+import com.google.android.material.badge.BadgeDrawable
+import java.util.ArrayList
+import java.util.HashMap
 
 /**
  * Purpose - ConversationListAdapter is a subclass of RecyclerView Adapter which is used to display
@@ -238,7 +244,12 @@ class CometChatConversationsAdapter(context: Context?) : RecyclerView.Adapter<Co
         if (filterConversationList!!.contains(conversation)) {
             val oldConversation = filterConversationList!![filterConversationList!!.indexOf(conversation)]
             filterConversationList!!.remove(oldConversation)
-            conversation.unreadMessageCount = oldConversation.unreadMessageCount + 1
+            if (conversation.lastMessage.category != CometChatConstants.CATEGORY_CUSTOM && conversation.lastMessage.editedAt == 0L && conversation.lastMessage.deletedAt == 0L) {
+                conversation.unreadMessageCount = oldConversation.unreadMessageCount + 1
+            }
+            else {
+                conversation.unreadMessageCount = oldConversation.unreadMessageCount
+            }
             filterConversationList!!.add(0, conversation)
         } else {
             filterConversationList!!.add(0, conversation)

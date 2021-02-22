@@ -10,7 +10,9 @@
 
 # Android Kotlin Chat UI Kit
 
-The **UI Kit** library is collection of custom **UI Components** and **UI Screens** design to build chat application within few minutes. **UI kit** is designed to avoid boilerplate code for building UI,it has three different ways to build a chat application with fully customizable UI. It will help developers to build a chat application within using various **UI Components**.
+CometChat Kotlin UI Kit is a collection of custom UI Components designed to build text chat and voice/video callings features in your application. 
+The UI Kit is developed to keep developers in mind and aims to reduce development efforts significantly.
+
 </br></br>
 
 ![Platform](https://img.shields.io/badge/Platform-Android-brightgreen.svg)
@@ -58,7 +60,7 @@ allprojects {
 Then, add CometChat to the app level build.gradle file in the dependencies section.
 ```groovy
 dependencies {
-	implementation 'com.cometchat:pro-android-chat-sdk:2.1.4'
+	implementation 'com.cometchat:pro-android-chat-sdk:2.2.0'
 }
 ```
 ```groovy
@@ -148,7 +150,7 @@ To integrate CometChat kotlin UIKit inside your app. Kindly follow the below ste
 2. Import uikit-kotlin Module from Module Settings. ( To know how to import `uikit-kotlin` as Module visit this [link](https://prodocs.cometchat.com/docs/android-ui-kit-setup) )
 3. If the Library is added successfully, it will look like mentioned in the below image.
 
-<img align="center" width="auto" height="auto" src="https://github.com/cometchat-pro-samples/android-kotlin-chat-app/blob/master/Screenshot/Screen%20Shot%202019-12-23%20at%207.37.37%20PM.png">
+<img align="center" width="auto" height="auto" src="https://github.com/cometchat-pro-samples/android-kotlin-chat-app/blob/master/Screenshot/file_structure.png">
 
 4. Next steps is to adding necessary dependancies inside your app to integrate UI Kit-Kotlin.
 
@@ -213,6 +215,6 @@ Contact us via real time support present in [CometChat Dashboard](https://app.co
 
 ## License
 
-This project uses the following license: [License](https://github.com/cometchat-pro/android-kotlin-chat-ui-kit/blob/main/LICENSE).
+This project uses the following license: [License](https://github.com/cometchat-pro/.github/blob/master/LICENSE).
 
 

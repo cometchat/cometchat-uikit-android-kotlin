@@ -33,7 +33,7 @@ import com.cometchat.pro.models.User
 import com.cometchat.pro.uikit.ui_components.shared.cometchatAvatar.CometChatAvatar
 import com.cometchat.pro.uikit.R
 import com.cometchat.pro.uikit.ui_components.shared.cometchatSharedMedia.CometChatSharedMedia
-import com.cometchat.pro.uikit.ui_components.cometchat_ui.CometChatUnified
+import com.cometchat.pro.uikit.ui_components.cometchat_ui.CometChatUI
 import com.cometchat.pro.uikit.ui_components.groups.admin_moderator_list.CometChatAdminModeratorListActivity
 import com.cometchat.pro.uikit.ui_components.groups.add_members.CometChatAddMembersActivity
 import com.cometchat.pro.uikit.ui_components.groups.banned_members.CometChatBanMembersActivity
@@ -407,7 +407,7 @@ class CometChatGroupDetailActivity() : AppCompatActivity() {
     }
 
     private fun launchUnified() {
-        val intent = Intent(this@CometChatGroupDetailActivity, CometChatUnified::class.java)
+        val intent = Intent(this@CometChatGroupDetailActivity, CometChatUI::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
         startActivity(intent)
         finish()

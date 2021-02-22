@@ -45,7 +45,7 @@ import java.util.*
  *
  * Modified on  - 16th January 2020
  */
-class CometChatUnified : AppCompatActivity(), BottomNavigationView.OnNavigationItemSelectedListener, OnAlertDialogButtonClickListener {
+class CometChatUI : AppCompatActivity(), BottomNavigationView.OnNavigationItemSelectedListener, OnAlertDialogButtonClickListener {
     //Used to bind the layout with class
     private var activityCometChatUnifiedBinding: ActivityCometchatUnifiedBinding? = null
 
@@ -94,8 +94,8 @@ class CometChatUnified : AppCompatActivity(), BottomNavigationView.OnNavigationI
                         val dialogview = layoutInflater.inflate(R.layout.cc_dialog, null)
                         val tvTitle = dialogview.findViewById<TextView>(R.id.textViewDialogueTitle)
                         tvTitle.text = String.format(resources.getString(R.string.enter_password_to_join), group!!.name)
-                        CustomAlertDialogHelper(this@CometChatUnified, resources.getString(R.string.password), dialogview, resources.getString(R.string.join),
-                                "", resources.getString(R.string.cancel), this@CometChatUnified, 1, false)
+                        CustomAlertDialogHelper(this@CometChatUI, resources.getString(R.string.password), dialogview, resources.getString(R.string.join),
+                                "", resources.getString(R.string.cancel), this@CometChatUI, 1, false)
                     } else if (group!!.groupType == CometChatConstants.GROUP_TYPE_PUBLIC) {
                         joinGroup(group)
                     }
@@ -171,7 +171,7 @@ class CometChatUnified : AppCompatActivity(), BottomNavigationView.OnNavigationI
         get() {
             CometChat.getUnreadMessageCount(object : CallbackListener<HashMap<String?, HashMap<String, Int?>>>() {
                 override fun onSuccess(stringHashMapHashMap: HashMap<String?, HashMap<String, Int?>>) {
-                    Log.e(TAG, "onSuccess: $stringHashMapHashMap")
+                    Log.e(TAG, "onSuccess: unread $stringHashMapHashMap")
                     unreadCount.addAll(stringHashMapHashMap["user"]!!.keys) //Add users whose messages are unread.
                     unreadCount.addAll(stringHashMapHashMap["group"]!!.keys) //Add groups whose messages are unread.
                     badgeDrawable!!.isVisible = unreadCount.size != 0
@@ -192,17 +192,19 @@ class CometChatUnified : AppCompatActivity(), BottomNavigationView.OnNavigationI
      * @see BaseMessage
      */
     private fun setUnreadCount(message: BaseMessage) {
-        if (message.receiverType == CometChatConstants.RECEIVER_TYPE_GROUP) {
-            if (!unreadCount.contains(message.receiverUid)) {
-                unreadCount.add(message.receiverUid)
-                setBadge()
+//        if (message.editedAt == 0L && message.deletedAt == 0L) {
+            if (message.receiverType == CometChatConstants.RECEIVER_TYPE_GROUP) {
+                if (!unreadCount.contains(message.receiverUid)) {
+                    unreadCount.add(message.receiverUid)
+                    setBadge()
+                }
+            } else {
+                if (!unreadCount.contains(message.sender.uid)) {
+                    unreadCount.add(message.sender.uid)
+                    setBadge()
+                }
             }
-        } else {
-            if (!unreadCount.contains(message.sender.uid)) {
-                unreadCount.add(message.sender.uid)
-                setBadge()
-            }
-        }
+//        }
     }
 
     /**
@@ -230,6 +232,8 @@ class CometChatUnified : AppCompatActivity(), BottomNavigationView.OnNavigationI
             override fun onCustomMessageReceived(message: CustomMessage) {
                 setUnreadCount(message)
             }
+
+
         })
     }
 
@@ -240,7 +244,7 @@ class CometChatUnified : AppCompatActivity(), BottomNavigationView.OnNavigationI
      * @see CometChatMessageListActivity
      */
     private fun startUserIntent(user: User) {
-        val intent = Intent(this@CometChatUnified, CometChatMessageListActivity::class.java)
+        val intent = Intent(this@CometChatUI, CometChatMessageListActivity::class.java)
         intent.putExtra(UIKitContracts.IntentStrings.UID, user.uid)
         intent.putExtra(UIKitContracts.IntentStrings.AVATAR, user.avatar)
         intent.putExtra(UIKitContracts.IntentStrings.STATUS, user.status)
@@ -256,7 +260,7 @@ class CometChatUnified : AppCompatActivity(), BottomNavigationView.OnNavigationI
      * @see CometChatMessageListActivity
      */
     private fun startGroupIntent(group: Group?) {
-        val intent = Intent(this@CometChatUnified, CometChatMessageListActivity::class.java)
+        val intent = Intent(this@CometChatUI, CometChatMessageListActivity::class.java)
         intent.putExtra(UIKitContracts.IntentStrings.GUID, group!!.guid)
         intent.putExtra(UIKitContracts.IntentStrings.AVATAR, group.icon)
         intent.putExtra(UIKitContracts.IntentStrings.GROUP_OWNER, group.owner)
@@ -338,6 +342,6 @@ class CometChatUnified : AppCompatActivity(), BottomNavigationView.OnNavigationI
 
     companion object {
         //Used to identify class in Log's
-        private val TAG = CometChatUnified::class.java.simpleName
+        private val TAG = CometChatUI::class.java.simpleName
     }
 }

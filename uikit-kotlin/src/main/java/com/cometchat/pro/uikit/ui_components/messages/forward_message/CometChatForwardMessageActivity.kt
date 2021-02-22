@@ -36,7 +36,7 @@ import com.cometchat.pro.exceptions.CometChatException
 import com.cometchat.pro.models.*
 import com.cometchat.pro.uikit.ui_components.shared.cometchatConversations.CometChatConversation
 import com.cometchat.pro.uikit.R
-import com.cometchat.pro.uikit.ui_components.cometchat_ui.CometChatUnified
+import com.cometchat.pro.uikit.ui_components.cometchat_ui.CometChatUI
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.chip.Chip
@@ -264,7 +264,7 @@ class CometChatForwardMessageActivity : AppCompatActivity() {
                             message = TextMessage(uid, textMessage, type)
                             sendMessage(message)
                             if (i == userList.size - 1) {
-                                val intent = Intent(this@CometChatForwardMessageActivity, CometChatUnified::class.java)
+                                val intent = Intent(this@CometChatForwardMessageActivity, CometChatUI::class.java)
                                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
                                 startActivity(intent)
                                 finish()
@@ -297,7 +297,7 @@ class CometChatForwardMessageActivity : AppCompatActivity() {
                             Log.e(TAG, "onClick: $attachment")
                             sendMediaMessage(message)
                             if (i == userList.size - 1) {
-                                val intent = Intent(this@CometChatForwardMessageActivity, CometChatUnified::class.java)
+                                val intent = Intent(this@CometChatForwardMessageActivity, CometChatUI::class.java)
                                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
                                 startActivity(intent)
                                 finish()
@@ -330,7 +330,7 @@ class CometChatForwardMessageActivity : AppCompatActivity() {
                             }
                             sendMediaMessage(message)
                             if (i == userList!!.size - 1) {
-                                val intent = Intent(this@CometChatForwardMessageActivity, CometChatUnified::class.java)
+                                val intent = Intent(this@CometChatForwardMessageActivity, CometChatUI::class.java)
                                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
                                 startActivity(intent)
                                 finish()
@@ -365,7 +365,7 @@ class CometChatForwardMessageActivity : AppCompatActivity() {
                             message = CustomMessage(uid, type, UIKitContracts.IntentStrings.LOCATION, customData)
                             sendLocationMessage(message)
                             if (i == userList!!.size - 1) {
-                                val intent = Intent(this@CometChatForwardMessageActivity, CometChatUnified::class.java)
+                                val intent = Intent(this@CometChatForwardMessageActivity, CometChatUI::class.java)
                                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
                                 startActivity(intent)
                                 finish()
