@@ -22,6 +22,9 @@ The UI Kit is developed to keep developers in mind and aims to reduce developmen
 ![GitHub stars](https://img.shields.io/github/stars/cometchat-pro/android-kotlin-chat-ui-kit?style=social)
 ![Twitter Follow](https://img.shields.io/twitter/follow/cometchat?style=social)
 
+</br>
+
+  <img align="center" alt="" src="https://github.com/cometchat-pro/android-kotlin-chat-ui-kit/blob/main/Screenshot/UI-Kit.png">
 ---
 
 ## Prerequisites :star:
