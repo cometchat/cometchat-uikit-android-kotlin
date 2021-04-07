@@ -22,9 +22,6 @@ The UI Kit is developed to keep developers in mind and aims to reduce developmen
 ![GitHub stars](https://img.shields.io/github/stars/cometchat-pro/android-kotlin-chat-ui-kit?style=social)
 ![Twitter Follow](https://img.shields.io/twitter/follow/cometchat?style=social)
 
-</br>
-
-  <img align="center" alt="" src="https://github.com/cometchat-pro/android-kotlin-chat-ui-kit/blob/main/Screenshot/UI-Kit.png">
 ---
 
 ## Prerequisites :star:
@@ -54,7 +51,7 @@ First, add the repository URL to the project level build.gradle file in the repo
 allprojects {
 	repositories {
 		maven {
-			url "https://dl.bintray.com/cometchat/pro"
+			url "https://dl.cloudsmith.io/public/cometchat/cometchat-pro-android/maven/"
 		}
 	}
 }
@@ -63,7 +60,7 @@ allprojects {
 Then, add CometChat to the app level build.gradle file in the dependencies section.
 ```groovy
 dependencies {
-	implementation 'com.cometchat:pro-android-chat-sdk:2.2.1'
+	implementation 'com.cometchat:pro-android-chat-sdk:3.0.0-beta1'
 }
 ```
 ```groovy
