@@ -51,7 +51,7 @@ First, add the repository URL to the project level build.gradle file in the repo
 allprojects {
 	repositories {
 		maven {
-			url "https://dl.bintray.com/cometchat/pro"
+			url "https://dl.cloudsmith.io/public/cometchat/cometchat-pro-android/maven/"
 		}
 	}
 }
@@ -60,7 +60,7 @@ allprojects {
 Then, add CometChat to the app level build.gradle file in the dependencies section.
 ```groovy
 dependencies {
-	implementation 'com.cometchat:pro-android-chat-sdk:2.3.0'
+	implementation 'com.cometchat:pro-android-chat-sdk:2.3.1'
 }
 ```
 ```groovy
