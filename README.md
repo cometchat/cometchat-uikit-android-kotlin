@@ -60,7 +60,7 @@ allprojects {
 Then, add CometChat to the app level build.gradle file in the dependencies section.
 ```groovy
 dependencies {
-	implementation 'com.cometchat:pro-android-chat-sdk:3.0.0-beta1'
+	implementation 'com.cometchat:pro-android-chat-sdk:3.0.0-beta4'
 }
 ```
 ```groovy
