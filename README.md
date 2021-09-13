@@ -28,7 +28,7 @@ The UI Kit is developed to keep developers in mind and aims to reduce developmen
 Before you begin, ensure you have met the following requirements:<br/>
 ✅ &nbsp; You have `Android Studio` installed in your machine <br/>
 ✅ &nbsp; Android kotlin Chat UI Kit works for the Android devices from Android 6.0 and above <br/>
-✅ &nbsp; You have read [CometChat Key Concepts](https://prodocs.cometchat.com/docs/concepts).<br/>
+✅ &nbsp; You have read [CometChat Key Concepts](https://prodocs.cometchat.com/v2.1/docs/concepts).<br/>
 
 ---
 
@@ -60,7 +60,7 @@ allprojects {
 Then, add CometChat to the app level build.gradle file in the dependencies section.
 ```groovy
 dependencies {
-	implementation 'com.cometchat:pro-android-chat-sdk:2.4.0'
+	implementation 'com.cometchat:pro-android-chat-sdk:2.4.1'
 }
 ```
 ```groovy
@@ -147,7 +147,7 @@ if (CometChat.getLoggedInUser() == null) {
 To integrate CometChat kotlin UIKit inside your app. Kindly follow the below steps:
 
 1. Simply clone the UI Kit-Kotlin Library from [android-kotlin-chat-uikit](https://github.com/cometchat-pro/android-kotlin-chat-ui-kit) repository.
-2. Import uikit-kotlin Module from Module Settings. ( To know how to import `uikit-kotlin` as Module visit this [link](https://prodocs.cometchat.com/docs/android-ui-kit-setup) )
+2. Import uikit-kotlin Module from Module Settings. ( To know how to import `uikit-kotlin` as Module visit this [link](https://prodocs.cometchat.com/v2.1/docs/android-ui-kit-setup) )
 3. If the Library is added successfully, it will look like mentioned in the below image.
 
 <img align="center" width="auto" height="auto" src="https://github.com/cometchat-pro-samples/android-kotlin-chat-app/blob/master/Screenshot/file_structure.png">
@@ -202,7 +202,7 @@ Visit our [Kotlin sample app](https://github.com/cometchat-pro/android-kotlin-ch
 Visit our [Java sample app](https://github.com/cometchat-pro/android-java-chat-app) repo to run the Java sample app.
 
 ## Troubleshooting
-- To read the full documentation on UI Kit integration visit our [Documentation](https://prodocs.cometchat.com/docs/android-kotlin-ui-kit).
+- To read the full documentation on UI Kit integration visit our [Documentation](https://prodocs.cometchat.com/v2.1/docs).
 - Facing any issues while integrating or installing the UI Kit please <a href="https://app.cometchat.io/"> connect with us via real time support present in CometChat Dashboard.</a>.
 
 ## Contributors
