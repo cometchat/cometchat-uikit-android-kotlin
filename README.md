@@ -92,7 +92,7 @@ android {
 ```
 ## Configure CometChat inside your app
 ### i. Initialize CometChat
-The `init()` method initializes the settings required for CometChat. We suggest calling the init() method on app startup, preferably in the onCreate() method of the Application class.
+The `init()` method initializes the settings required for CometChat. Please make sure to call this method before calling any other methods from CometChat SDK.
 
 ```kotlin
 private val appID = "APP_ID"
