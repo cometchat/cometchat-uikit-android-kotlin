@@ -38,7 +38,7 @@ To install Android Kotlin UI Kit, you need to first register on CometChat Dashbo
 
 ###  i. Get your Application Keys :key:
 - Create a new app: Click **Add App** option available  →  Enter App Name & other information  → Create App
-- You will find `APP_ID`, `API_KEY` and `REGION` key at top in **QuickStart** section or else go to "API & Auth Keys" section and copy the `APP_ID`, `API_KEY` and `REGION` key from the "Auth Only API Key" tab.
+- You will find `APP_ID`, `AUTH_KEY` and `REGION` key at top in **Credentials** section.
 <img align="center" src="https://github.com/cometchat-pro-samples/android-kotlin-chat-app/blob/master/Screenshot/qs.png"/>
 
 
@@ -60,7 +60,7 @@ allprojects {
 Then, add CometChat to the app level build.gradle file in the dependencies section.
 ```groovy
 dependencies {
-	implementation 'com.cometchat:pro-android-chat-sdk:2.4.1'
+	implementation 'com.cometchat:pro-android-chat-sdk:3.0.14'
 }
 ```
 ```groovy
@@ -208,7 +208,7 @@ Visit our [Java sample app](https://github.com/cometchat-pro/android-java-chat-a
 ## Contributors
 Thanks to the following people who have contributed to this project:<br/>
 [@poojashivane](https://github.com/PoojaShivane)
-
+<br>[@vivekprajapati](https://github.com/vivekCometChat)</br>
 		
 ## :mailbox: Contact 
 Contact us via real time support present in [CometChat Dashboard](https://app.cometchat.io/).
