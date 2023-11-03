@@ -1053,9 +1053,9 @@ class CometChatThreadMessageList : Fragment(), View.OnClickListener, OnMessageLo
         scrollToBottom()
     }
 
-    private fun initMessageAdapter(messageList: List<BaseMessage>) {
+    private fun initMessageAdapter(messageList: List<BaseMessage>) = context?.let { ctx ->
         if (messageAdapter == null) {
-            messageAdapter = ThreadAdapter(activity!!, messageList, type!!)
+            messageAdapter = ThreadAdapter(ctx, messageList, type!!)
             rvChatListView!!.adapter = messageAdapter
             messageAdapter!!.notifyDataSetChanged()
         } else {
@@ -1465,10 +1465,9 @@ class CometChatThreadMessageList : Fragment(), View.OnClickListener, OnMessageLo
     }
 
     private fun checkSmartReply(lastMessage: BaseMessage?) {
-        if (lastMessage != null && lastMessage.sender.uid != loggedInUser.uid) {
-            if (lastMessage.metadata != null) {
-                getSmartReplyList(lastMessage)
-            }
+        if (lastMessage != null && lastMessage.sender.uid != loggedInUser.uid &&
+            lastMessage.metadata != null) {
+            getSmartReplyList(lastMessage)
         }
     }
 

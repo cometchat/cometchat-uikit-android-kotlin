@@ -1533,9 +1533,9 @@ class CometChatMessageList : Fragment(), View.OnClickListener, OnMessageLongClic
      *
      * @param messageList is a list of messages which will be added.
      */
-    private fun initMessageAdapter(messageList: List<BaseMessage>) {
+    private fun initMessageAdapter(messageList: List<BaseMessage>) = context?.let { ctx ->
         if (messageAdapter == null) {
-            messageAdapter = activity?.let { MessageAdapter(it, messageList, CometChatMessageList::class.java.name) }
+            messageAdapter = MessageAdapter(ctx, messageList, CometChatMessageList::class.java.name)
             rvChatListView?.adapter = messageAdapter
             stickyHeaderDecoration = StickyHeaderDecoration(messageAdapter!!)
             rvChatListView?.addItemDecoration(stickyHeaderDecoration!!, 0)
@@ -2168,10 +2168,9 @@ class CometChatMessageList : Fragment(), View.OnClickListener, OnMessageLongClic
     }
 
     private fun checkSmartReply(lastMessage: BaseMessage?) {
-        if (lastMessage != null && lastMessage.sender.uid != loggedInUser.uid) {
-            if (lastMessage.metadata != null) {
-                getSmartReplyList(lastMessage)
-            }
+        if (lastMessage != null && lastMessage.sender.uid != loggedInUser.uid &&
+            lastMessage.metadata != null) {
+            getSmartReplyList(lastMessage)
         }
     }
 

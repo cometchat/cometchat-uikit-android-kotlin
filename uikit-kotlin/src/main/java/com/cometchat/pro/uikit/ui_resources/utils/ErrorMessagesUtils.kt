@@ -26,20 +26,20 @@ class ErrorMessagesUtils {
             }
         }
 
-        fun showCometChatErrorDialog (context: Context?, errorMessage : String?) {
-            val builder = context?.let { AlertDialog.Builder(it) }
-            val dialogView = LayoutInflater.from(context).inflate(R.layout.cometchat_error_message_view, null, false)
-            builder?.setView(dialogView)
+        fun showCometChatErrorDialog (context: Context?, errorMessage : String?) = context?.let { ctx ->
+            val builder = AlertDialog.Builder(ctx)
+            val dialogView = LayoutInflater.from(ctx).inflate(R.layout.cometchat_error_message_view, null, false)
+            builder.setView(dialogView)
             dialogView.findViewById<TextView>(R.id.tv_error_message).text = errorMessage
-            dialogView.findViewById<LinearLayout>(R.id.ll_background).background = context?.getDrawable(R.color.red_600)
+            dialogView.findViewById<LinearLayout>(R.id.ll_background).background = context.getDrawable(R.color.red_600)
             dialogView.findViewById<ImageView>(R.id.iv_error_icon).setImageResource(R.drawable.error_icon)
-            val alertDialog = builder?.create()
-            alertDialog?.window?.setGravity(Gravity.TOP)
-            alertDialog?.window?.attributes?.windowAnimations = R.style.DialogAnimation
+            val alertDialog = builder.create()
+            alertDialog.window?.setGravity(Gravity.TOP)
+            alertDialog.window?.attributes?.windowAnimations = R.style.DialogAnimation
             dialogView.findViewById<ImageView>(R.id.iv_error_close).setOnClickListener(View.OnClickListener {
-                alertDialog?.dismiss()
+                alertDialog.dismiss()
             })
-            alertDialog?.show()
+            alertDialog.show()
         }
     }
 }
