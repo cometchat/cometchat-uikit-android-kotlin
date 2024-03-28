@@ -1,4 +1,3 @@
-```markdown
 # CometChat UIKit for Android Kotlin (Legacy)
 
 ## Important Notice
@@ -16,5 +15,3 @@ We are committed to providing high-quality support to ensure a smooth transition
 
 ## Legacy Repository Reference
 The contents of this repository are preserved for historical purposes and reference for projects that have been built using this version of the CometChat UIKit for Kotlin. However, we strongly recommend updating to the latest version of the [CometChat Android Java UIKit](https://github.com/cometchat/cometchat-uikit-android) to benefit from new features, improvements, and support.
-
-```
