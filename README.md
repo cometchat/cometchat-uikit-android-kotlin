@@ -1,3 +1,8 @@
+<p align="center">
+  <img alt="CometChat" src="https://assets.cometchat.io/website/images/logos/banner.png">
+</p>
+
+
 # CometChat UIKit for Android Kotlin (Legacy)
 
 ## Important Notice
