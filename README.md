@@ -5,6 +5,9 @@
 
 # CometChat UIKit for Android Kotlin (Legacy)
 
+## 🚀 Try the New v5 UI Kit!
+Discover the all-new [v5 UI Kit](https://github.com/cometchat/cometchat-uikit-android/tree/v5), featuring a completely revamped design for enhanced usability and visual appeal. With restructured components, advanced styling options, and a streamlined integration process, v5 offers a seamless, customizable experience tailored to your needs. Try it now and elevate your development workflow!
+
 ## Important Notice
 As of August 30th, 2023, CometChat will no longer be providing a separate UIKit for Kotlin apps. We encourage all developers to utilize the [CometChat UIKit for Android](https://github.com/cometchat/cometchat-uikit-android) which is fully compatible with Kotlin applications. This repository will be maintained as a legacy reference but will not receive further updates. We apologize for any inconvenience and thank you for your understanding.
 
